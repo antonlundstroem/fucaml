@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# Install entr if not already installed and export current working directory to $PATH
+if [ $(dpkg-query -W -f '${Status}' entr 2>/dev/null | grep -c "ok installed") -eq 0 ]
+then
+	DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+	apt-get --yes --force-yes install entr
+	echo "export PATH=$DIR:$PATH" >> ~/.bashrc
+	source ~/.bashrc
+fi
+
+# Case for first argument passed into script. 
+# If -f flag is passed, it will compile the passed in *.ml file
+# If no flag used it will compile the *.ml file in the director
+case $1 in
+	["-f"]*)
+		SOURCE=$2
+		;;
+	*)	SOURCE=$(ls | grep *.ml)
+		;;
+esac
+
+
+# Get filname to name the binary
+BINARY=$(echo $SOURCE | cut -f1 -d".")".bin"
+
+# Get current working directory
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+# Start the program by calling the 'runner.sh' script as utility for entr
+echo $SOURCE | entr -c $DIR/runner.sh $BINARY $SOURCE
