@@ -3,23 +3,32 @@
 # Install entr if not already installed and export current working directory to $PATH
 if [ $(dpkg-query -W -f '${Status}' entr 2>/dev/null | grep -c "ok installed") -eq 0 ]
 then
+	echo "Package 'entr' not found, installing..."
 	DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 	apt-get --yes --force-yes install entr
 	echo "export PATH=$DIR:$PATH" >> ~/.bashrc
 	source ~/.bashrc
+	exit
 fi
 
 # Case for first argument passed into script. 
 # If -f flag is passed, it will compile the passed in *.ml file
-# If no flag used it will compile the *.ml file in the director
+# If no flag used it will compile the *.ml file in the directory
 case $1 in
 	["-f"]*)
 		SOURCE=$2
 		;;
-	*)	SOURCE=$(ls | grep *.ml)
+	*)
+		if [ $(ls | grep .ml | wc -l) -gt 1 ]
+		then
+			echo "Found more than two ocaml files, which one do you want to compile?"
+			echo $(ls | grep .ml)
+			read SOURCE
+		else
+			SOURCE=$(ls | grep .ml)
+		fi
 		;;
 esac
-
 
 # Get filname to name the binary
 BINARY=$(echo $SOURCE | cut -f1 -d".")".bin"

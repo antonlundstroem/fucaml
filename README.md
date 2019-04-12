@@ -9,14 +9,12 @@
 
 **Usage:**
 
-When in a directory with a **_single_** \*.ml file:
-
-Simply run `fucaml` and the program will automatically find the \*.ml file, compile and run it.
+Simply run `fucaml` and the program will automatically find the \*.ml file, compile and run it. If multiple files are found it will prompt the user for which file to compile.
 
 **To compile a specific file:**
 
 `fucaml -f <filename>`
 
-Let the program run and each time your source code is saved in emacs/vim/some other texteditor the source will recompile and run the new binary.
+Let the program run and each time your source code is saved in emacs/vim/vscode/othertexteditor the source will recompile and run the new binary.
 
 ![alt text](https://raw.githubusercontent.com/antonlundstroem/fucaml/master/example.png)
