@@ -1,40 +1,64 @@
 #!/bin/bash
-
 # Install entr if not already installed and export current working directory to $PATH
 if [ $(dpkg-query -W -f '${Status}' entr 2>/dev/null | grep -c "ok installed") -eq 0 ]
 then
 	echo "Package 'entr' not found, installing..."
 	DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 	apt-get --yes --force-yes install entr
-	echo "export PATH=$DIR:$PATH" >> ~/.bashrc
-	source ~/.bashrc
+	echo "export PATH=$DIR:$PATH" >> ~/.bashrc && source ~/.bashrc
 	exit
 fi
+
+function set_source_filename(){
+	if [ $(ls | grep .ml | wc -l) -gt 1 ]
+	then
+		echo "> Found more than two ocaml files, which one do you want to compile?"
+		echo $(ls | grep .ml)
+		read SOURCE
+	else
+		SOURCE=$(ls | grep .ml)
+	fi
+}
 
 # Case for first argument passed into script. 
 # If -f flag is passed, it will compile the passed in *.ml file
 # If no flag used it will compile the *.ml file in the directory
-case $1 in
-	["-f"]*)
-		SOURCE=$2
-		;;
-	*)
-		if [ $(ls | grep .ml | wc -l) -gt 1 ]
-		then
-			echo "Found more than two ocaml files, which one do you want to compile?"
-			echo $(ls | grep .ml)
-			read SOURCE
-		else
-			SOURCE=$(ls | grep .ml)
-		fi
-		;;
-esac
+while getopts ":f:bh" flag; do
+	case $flag in
+		f)
+			FLAG="-f"
+			SOURCE=$2
+			BINARY=$(echo $SOURCE | cut -f1 -d".")".bin"
+			;;
+		b)
+			FLAG="-b"
+			set_source_filename
+			BINARY=$(echo $SOURCE | cut -f1 -d".")".byte"
+			;;
+		h)
+			echo "Available flags as of right now:"
+			echo "-f <file> to compile and run a specific file"
+			echo "-b to use ocamlbuild instead of ocamlc as compiler"
+			exit
+			;;
+		\?)
+			echo "Non-recognizable flag"
+			exit
+			;;
+		:)
+			echo "Argument required for flag"
+			exit
+			;;
+	esac
+done
 
-# Get filname to name the binary
-BINARY=$(echo $SOURCE | cut -f1 -d".")".bin"
+if (( $OPTIND == 1 )); then
+	set_source_filename
+	BINARY=$(echo $SOURCE | cut -f1 -d".")".bin"
+fi
 
 # Get current working directory
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 # Start the program by calling the 'runner.sh' script as utility for entr
-echo $SOURCE | entr -c $DIR/runner.sh $BINARY $SOURCE
+echo $SOURCE | entr -c $DIR/runner.sh $FLAG $BINARY $SOURCE
