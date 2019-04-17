@@ -30,4 +30,10 @@ done
 set -- "${POSITIONAL[@]}"
 
 # Runs the newly compiled binary
+<<<<<<< HEAD
+=======
+
+
+## Check that this is different from previous binary
+>>>>>>> develop
 ./$BINARY
