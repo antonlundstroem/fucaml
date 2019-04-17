@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 # Runs all different build options depending on what flags are passed in
 POSITIONAL=()
 while [[ $# -gt 0 ]]
@@ -30,7 +29,5 @@ done
 set -- "${POSITIONAL[@]}"
 
 # Runs the newly compiled binary
-
-
-## Check that this is different from previous binary
+## Check that this is different from previous binary, maybe not needed
 ./$BINARY
