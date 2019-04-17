@@ -5,7 +5,7 @@
 2. `cd into newly cloned directory and run 'sudo ./fucaml', this will install entr and add the directory to your $PATH`
 
 ### One-liner installation and setup:
-`git clone https://github.com/antonlundstroem/fucaml && cd fucaml && sudo ./fucaml`
+`git clone https://github.com/antonlundstroem/fucaml && cd fucaml && sudo ./fucaml && source ~/.bashrc`
 
 **Usage:**
 
